@@ -172,12 +172,6 @@ function crearCardCarrito(producto) {
                 <h3>$ ${producto.precio}</h3>
             </div>
 
-            <div class="carrito-cantidad">
-                <p class="btn-menos" onclick="restarProductos(${producto.id})">-</p>
-                <span class="btn-cantidad" id="btn-contador">0</span>
-                <p class="btn-mas"  onclick="sumarProductos(${producto.id})">+</p>
-            </div>
-            
             <div class="modal-card-accion">
                 <h2 class="btn-agregar">Comprar</h2>
                 <h2 class="btn-eliminar" onclick="eliminarCarrito(${producto.id})">Eliminar de carrito</h2>
@@ -191,23 +185,6 @@ function crearCardCarrito(producto) {
 function contadorCarrito() {
     let contadorCar = document.getElementById("contador-Cart")
     contadorCar.innerHTML = `${carrito.length}`
-}
-
-//Agregar cantidad de productos carrito 
-
-function sumarProductos(id){
-
-    let productoSumar = carrito.find(producto => producto.id == id)
-    carrito.push(productoSumar)
-    let contador = document.querySelector("#btn-contador");
-    contador.innerHTML = 1
-}
-
-function restarProductos(id){
-    if(carrito.length > 1){
-    let productoSumar = carrito.find(producto => producto.id == id)
-    carrito.pop(productoSumar)
-    }
 }
 
 //---------------------------------------------------FAVORITOS-------------------------------------------------
@@ -326,52 +303,67 @@ let btnFiltroPantalon = document.getElementById("filtroPantalon")
 let btnFiltroBuzo = document.getElementById("filtroBuzo")
 let btnFiltroCalzado = document.getElementById("filtroCalzado")
 
-btnFiltroTodos.onclick = function (){
-    filtrados = listaProductos
-    colorBtnFiltro(this,"filtroTipo" )
-    crearCardsMain(listaProductos)
+btnFiltroTodos.onclick = filtrarProductos
+btnFiltroRemera.onclick = filtrarProductos
+btnFiltroPantalon.onclick = filtrarProductos
+btnFiltroBuzo.onclick = filtrarProductos
+btnFiltroCalzado.onclick = filtrarProductos
+
+function filtrarProductos(event) {
+    const idBoton = event.target.id
+    switch (idBoton) {
+        case "filtroTodos":
+            filtrados = listaProductos;
+            colorBtnFiltro(this, "filtroTipo")
+            crearCardsMain(listaProductos)
+            breack;
+        case "filtroRemera":
+            filtrados = listaProductos.filter(
+                (producto) => producto.tipo == "remera"
+            )
+            colorBtnFiltro(this, "filtroTipo")
+            crearCardsMain(filtrados)
+            breack;
+        case "filtroPantalon":
+            filtrados = listaProductos.filter(
+                (producto) => producto.tipo == "pantalon"
+            )
+            colorBtnFiltro(this, "filtroTipo")
+            crearCardsMain(filtrados)
+            breack;
+        case "filtroBuzo":
+            filtrados = listaProductos.filter(
+                (producto) => producto.tipo == "buzo"
+            )
+            colorBtnFiltro(this, "filtroTipo")
+            crearCardsMain(filtrados)
+            breack;
+        case "filtroCalzado":
+            filtrados = listaProductos.filter(
+                (producto) => producto.tipo == "calzado"
+            )
+            colorBtnFiltro(this, "filtroTipo")
+            crearCardsMain(filtrados)
+            breack;
+    }
 }
 
-
-btnFiltroRemera.onclick = function (){
-    filtrados = listaProductos.filter(producto => producto.tipo == "remera")
-    colorBtnFiltro(this,"filtroTipo" )
-    crearCardsMain(filtrados)
-}
-
-btnFiltroPantalon.onclick = function (){
-    filtrados = listaProductos.filter(producto => producto.tipo == "pantalon")
-    colorBtnFiltro(this,"filtroTipo" )
-    crearCardsMain(filtrados)
-}
-
-btnFiltroBuzo.onclick = function (){
-    filtrados = listaProductos.filter(producto => producto.tipo == "buzo")
-    colorBtnFiltro(this,"filtroTipo" )
-    crearCardsMain(filtrados)
-}
-
-btnFiltroCalzado.onclick = function (){
-    filtrados = listaProductos.filter(producto => producto.tipo == "calzado")
-    colorBtnFiltro(this,"filtroTipo" )
-    crearCardsMain(filtrados)
-}
 
 // Filtros por costo
 
 let btnFiltroMayor = document.getElementById("filtroMayor")
 let btnFiltroMenor = document.getElementById("filtroMenor")
 
-btnFiltroMayor.onclick = function(){
-    colorBtnFiltro(this,"filtroPrecio" )
+btnFiltroMayor.onclick = function () {
+    colorBtnFiltro(this, "filtroPrecio")
     let filtradosCosto = filtrados.sort((a, b) => {
         return b.precio - a.precio;
     });
     crearCardsMain(filtradosCosto)
 }
 
-btnFiltroMenor.onclick = function(){
-    colorBtnFiltro(this,"filtroPrecio" )
+btnFiltroMenor.onclick = function () {
+    colorBtnFiltro(this, "filtroPrecio")
     let filtradosCosto = filtrados.sort((a, b) => {
         return a.precio - b.precio;
     });
