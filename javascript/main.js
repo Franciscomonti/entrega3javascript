@@ -1,0 +1,446 @@
+//---------------------------------------------LISTA DE PRODUCTOS----------------------------------------------
+
+class Producto {
+    constructor(id, nombre, codigo, tipo, precio, imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.precio = precio;
+        this.imagen = imagen;
+    }
+}
+
+const listaProductos = [];
+
+let prod1 = new Producto(1, "Zapatilla Nike", "MD500", "calzado", 25000.00, "nikeportada2.png")
+let prod2 = new Producto(2, "Remera Manga Larga", "RM5400", "remera", 3000.00, "remera-blanca-hombre-ml.jpg")
+let prod3 = new Producto(3, "Buzo Negro Capucha", "BC300", "buzo", 5000.00, "buzo-negro-capucha.webp")
+let prod4 = new Producto(4, "Pantalon Cuadrille", "PC6000", "pantalon", 3000.00, "pantalon rojo.webp")
+let prod5 = new Producto(5, "Zapatilla Adidas MD", "AMD60", "calzado", 21000.00, "adidas md.png")
+let prod6 = new Producto(6, "Remera blanca imagen", "RBI300", "remera", 2500.00, "remera blanca img.png")
+let prod7 = new Producto(7, "Zapatilla Nike Air", "NA400", "calzado", 23000.00, "nike air.png")
+let prod8 = new Producto(8, "Remera Manga Corta", "RMC570", "remera", 2000.00, "remera-negra-hombre.webp")
+let prod9 = new Producto(9, "Buzo Negro", "B300", "buzo", 4500.00, "buzo-negro-hombre.webp")
+let prod10 = new Producto(10, "Pantalon Pampero", "PP600", "pantalon", 5000.00, "pantalon pampero.webp")
+let prod11 = new Producto(11, "Buzo Blanco Capucha", "BCB500", "buzo", 5200.00, "buzo-blanco-capucha.jpg")
+let prod12 = new Producto(12, "Chomba Hombre", "CH500", "remera", 4900.00, "chomba-blanca-hombre.jpg")
+
+listaProductos.push(prod1);
+listaProductos.push(prod2);
+listaProductos.push(prod3);
+listaProductos.push(prod4);
+listaProductos.push(prod5);
+listaProductos.push(prod6);
+listaProductos.push(prod7);
+listaProductos.push(prod8);
+listaProductos.push(prod9);
+listaProductos.push(prod10);
+listaProductos.push(prod11);
+listaProductos.push(prod12);
+
+//---------------------------------- ALERTAS----------------------------------
+
+function alertSeEncuentraCarrito(id) {
+    Swal.fire({
+        icon: 'info',
+        title: 'El producto seleccionado ya se encuentra en el Carrito',
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Ir al Carrito',
+        denyButtonText: `Quitar del Carrito`,
+        background: "white",
+        color: "black",
+        confirmButtonColor: "blue",
+        denyButtonColor: "red",
+        cancelButtonColor: "black"
+
+    }).then((result) => {
+        if (result.isConfirmed) {
+            modalCarrito.style.display = "flex"
+        } else if (result.isDenied) {
+            eliminarCarrito(id)
+        }
+    })
+}
+
+function alertToast(leyenda, color) {
+    Toastify({
+        text: leyenda,
+        duration: 2500,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: color,
+        },
+    }).showToast();
+}
+
+//-----------------------------------------------------MAIN---------------------------------------------------
+
+function crearCardsMain(productos) {
+    let cardsBloque = document.querySelector("#Productos-main");
+
+    cardsBloque.innerHTML = ""
+
+    productos.forEach(producto => {
+        cardsBloque.innerHTML += crearCard(producto);
+    })
+}
+
+function crearCard(producto) {
+
+    let iconFav = estaEnFav(producto.id) ? "fav black.svg" : "fav.svg";
+
+    let cardCreada = `
+        <div class="Productos-main-Card">
+            <div class="Productos-main-agregar-fav">
+                <img src="./img/icon/${iconFav}" alt="" id="${producto.id}" onclick="manejarFavs(${producto.id})">
+            </div>
+            <div class="Productos-main-Img"><img src="./img/prod/${producto.imagen}" alt=""></div>
+            <div class="Productos-main-Cuerpo">
+                <div class="Productos-main-Desc">
+                    <h2>${producto.nombre}</h2>
+                    <h3>${producto.codigo}</h3>
+                </div>
+                <div class="Productos-main-Agregar">
+                    <p>$ ${producto.precio}</p>
+                    <p class="btn-carrito"id="${producto.id}" onclick="manejarCarrito(${producto.id})"; ">Agregar al carrito</p>
+                </div>
+            </div>
+        </div>
+        `;
+    return cardCreada
+}
+
+
+//----------------------------------------------------CARRITO--------------------------------------------------
+
+let carrito = []
+
+function manejarCarrito(id) {
+    estaEnCarrito(id) ? alertSeEncuentraCarrito(id) : agregarCarrito(id)
+}
+
+function estaEnCarrito(id) {
+    let encontrar = carrito.find(prod => prod.id == id)
+    return encontrar != undefined
+}
+
+function agregarCarrito(id) {
+    let productoSelecFav = listaProductos.find(producto => producto.id == id)
+    carrito.push(productoSelecFav)
+
+    let cardCar = document.querySelector("#carrito");
+    cardCar.innerHTML += crearCardCarrito(productoSelecFav);
+
+    almacenarProductosLocalStorage("localCarrito", carrito)
+
+    alertToast("Producto agregado Correctamente", "black")
+
+    contadorCarrito()
+
+}
+
+function eliminarCarrito(id) {
+    let index = carrito.findIndex(prodCarrito => prodCarrito.id === id);
+    carrito.splice(index, 1)
+
+    let card = document.querySelector(`#car-${id}`)
+    card.parentNode.removeChild(card)
+
+    removerProductoLocalStorage("localCarrito")
+
+    almacenarProductosLocalStorage("localCarrito", carrito)
+
+    alertToast("Producto eliminado correctamente", "red")
+
+    contadorCarrito()
+}
+
+function crearCardCarrito(producto) {
+    let cardCreada = `
+    <div class="modal-card" id="car-${producto.id}">
+        <div class="modal-img">
+            <img src="./img/prod/${producto.imagen}" alt="">
+        </div>
+        <div class="desc-producto">
+            <div class="modal-card-desc">
+                <h2>${producto.nombre} </h2>
+                <h4>${producto.codigo}</h4>
+                <h3>$ ${producto.precio}</h3>
+            </div>
+
+            <div class="carrito-cantidad">
+                <p class="btn-menos" onclick="restarProductos(${producto.id})">-</p>
+                <span class="btn-cantidad" id="btn-contador">0</span>
+                <p class="btn-mas"  onclick="sumarProductos(${producto.id})">+</p>
+            </div>
+            
+            <div class="modal-card-accion">
+                <h2 class="btn-agregar">Comprar</h2>
+                <h2 class="btn-eliminar" onclick="eliminarCarrito(${producto.id})">Eliminar de carrito</h2>
+            </div>
+        </div>
+    </div>
+    `;
+    return cardCreada
+}
+
+function contadorCarrito() {
+    let contadorCar = document.getElementById("contador-Cart")
+    contadorCar.innerHTML = `${carrito.length}`
+}
+
+//Agregar cantidad de productos carrito 
+
+function sumarProductos(id){
+
+    let productoSumar = carrito.find(producto => producto.id == id)
+    carrito.push(productoSumar)
+    let contador = document.querySelector("#btn-contador");
+    contador.innerHTML = 1
+}
+
+function restarProductos(id){
+    if(carrito.length > 1){
+    let productoSumar = carrito.find(producto => producto.id == id)
+    carrito.pop(productoSumar)
+    }
+}
+
+//---------------------------------------------------FAVORITOS-------------------------------------------------
+
+let favoritos = []
+
+function manejarFavs(id) {
+    estaEnFav(id) ? eliminarFavorito(id) : agregarFavorito(id)
+}
+
+function estaEnFav(id) {
+    let encontrar = favoritos.find(prod => prod.id == id)
+    return encontrar != undefined
+}
+
+function agregarFavorito(id) {
+
+    let productoSelecFav = listaProductos.find(producto => producto.id == id)
+    favoritos.push(productoSelecFav)
+
+    document.getElementById(productoSelecFav.id).src = "./img/icon/fav black.svg";
+    let cardFav = document.querySelector("#modal-contenedor");
+    cardFav.innerHTML += crearCardFav(productoSelecFav);
+
+    almacenarProductosLocalStorage("localFavoritos", favoritos)
+
+    alertToast("Producto agregado a Favoritos", "black")
+
+    contadorFavoritos()
+}
+
+function eliminarFavorito(id) {
+    let index = favoritos.findIndex(producto => producto.id === id);
+    favoritos.splice(index, 1)
+
+    let productoSelecFav = listaProductos.find(producto => producto.id == id)
+    document.getElementById(productoSelecFav.id).src = "./img/icon/fav.svg";
+
+    let card = document.querySelector(`#fav-${id}`)
+    card.parentNode.removeChild(card)
+
+    removerProductoLocalStorage("localFavoritos")
+    almacenarProductosLocalStorage("localFavoritos", favoritos)
+
+    alertToast("Producto quitado de Favoritos", "red")
+
+    contadorFavoritos()
+}
+
+function crearCardFav(producto) {
+    let cardCreada = `
+    <div class="modal-card" id="fav-${producto.id}">
+            <div class="modal-img">
+                <img src="./img/prod/${producto.imagen}" alt="">
+            </div>
+            <div class="desc-producto">
+                <div class="modal-card-desc">
+                <h2>${producto.nombre} </h2>
+                <h4>${producto.codigo}</h4>
+                <h3>$ ${producto.precio}</h3>
+            </div>
+                <div class="modal-card-accion">
+                    <h2 class="btn-agregar" onclick="agregarCarrito(${producto.id})">Agregar al Carrito</h2>
+                    <h2 class="btn-eliminar" onclick="eliminarFavorito(${producto.id})">Eliminar</h2>
+                </div>
+            </div>
+        </div>
+                `;
+    return cardCreada
+}
+
+function contadorFavoritos() {
+    let contadorFav = document.getElementById("contador-Fav")
+    contadorFav.innerHTML = `${favoritos.length}`
+}
+
+//-----------------------------------------------------MODAL---------------------------------------------------
+
+// modal fav
+
+var modalFavorito = document.getElementById("modalFav");
+var btnModalFavorito = document.getElementById("btn-modal-fav");
+var btnCloseModalFavorito = document.getElementsByClassName("modal-cerrar")[0];
+
+btnModalFavorito.onclick = function () {
+    modalFavorito.style.display = "flex";
+}
+
+btnCloseModalFavorito.onclick = function () {
+    modalFavorito.style.display = "none";
+}
+
+// modal carrito
+
+var modalCarrito = document.getElementById("modalCarrito");
+var btnModalCarrito = document.getElementById("btn-modal-cart");
+var btnCloseModalCarrito = document.getElementsByClassName("modal-cerrar2")[0];
+
+btnModalCarrito.onclick = function () {
+    modalCarrito.style.display = "flex";
+}
+
+btnCloseModalCarrito.onclick = function () {
+    modalCarrito.style.display = "none";
+}
+
+// -------------------------------------------------FILTROS-------------------------------------------------------
+
+let filtrados = listaProductos
+
+// filtro por tipo
+
+let btnFiltroTodos = document.getElementById("filtroTodos")
+let btnFiltroRemera = document.getElementById("filtroRemera")
+let btnFiltroPantalon = document.getElementById("filtroPantalon")
+let btnFiltroBuzo = document.getElementById("filtroBuzo")
+let btnFiltroCalzado = document.getElementById("filtroCalzado")
+
+btnFiltroTodos.onclick = function (){
+    filtrados = listaProductos
+    colorBtnFiltro(this,"filtroTipo" )
+    crearCardsMain(listaProductos)
+}
+
+
+btnFiltroRemera.onclick = function (){
+    filtrados = listaProductos.filter(producto => producto.tipo == "remera")
+    colorBtnFiltro(this,"filtroTipo" )
+    crearCardsMain(filtrados)
+}
+
+btnFiltroPantalon.onclick = function (){
+    filtrados = listaProductos.filter(producto => producto.tipo == "pantalon")
+    colorBtnFiltro(this,"filtroTipo" )
+    crearCardsMain(filtrados)
+}
+
+btnFiltroBuzo.onclick = function (){
+    filtrados = listaProductos.filter(producto => producto.tipo == "buzo")
+    colorBtnFiltro(this,"filtroTipo" )
+    crearCardsMain(filtrados)
+}
+
+btnFiltroCalzado.onclick = function (){
+    filtrados = listaProductos.filter(producto => producto.tipo == "calzado")
+    colorBtnFiltro(this,"filtroTipo" )
+    crearCardsMain(filtrados)
+}
+
+// Filtros por costo
+
+let btnFiltroMayor = document.getElementById("filtroMayor")
+let btnFiltroMenor = document.getElementById("filtroMenor")
+
+btnFiltroMayor.onclick = function(){
+    colorBtnFiltro(this,"filtroPrecio" )
+    let filtradosCosto = filtrados.sort((a, b) => {
+        return b.precio - a.precio;
+    });
+    crearCardsMain(filtradosCosto)
+}
+
+btnFiltroMenor.onclick = function(){
+    colorBtnFiltro(this,"filtroPrecio" )
+    let filtradosCosto = filtrados.sort((a, b) => {
+        return a.precio - b.precio;
+    });
+    crearCardsMain(filtradosCosto)
+}
+
+//Color btn de filtro
+
+function colorBtnFiltro(element, tipo) {
+    let botones = document.getElementsByClassName(tipo)
+    for (let element of botones) {
+        element.style.color = "black"
+    }
+    element.style.color = "red"
+}
+
+
+
+//------------------------------------STORAGE------------------------------------------
+
+function almacenarProductosLocalStorage(arrayStorage, array) {
+    localStorage.setItem(arrayStorage, JSON.stringify(array));
+}
+
+function removerProductoLocalStorage(arrayStorage) {
+    localStorage.removeItem(arrayStorage)
+}
+
+function traerProductosLocalStorage(key) {
+    let storeList = localStorage.getItem(key)
+    return storeList == null ? [] : JSON.parse(storeList)
+}
+
+//Favaritos
+
+
+function pintarFavoritos() {
+    let cardFav = document.querySelector("#modal-contenedor");
+    favoritos.forEach((productos) => cardFav.innerHTML += crearCardFav(productos))
+
+}
+
+//Carrito
+
+function pintarCarrito() {
+    let cardCar = document.querySelector("#carrito");
+    carrito.forEach((productos) => cardCar.innerHTML += crearCardCarrito(productos))
+
+}
+
+//Iniciar local storage
+
+function inciarLocalStorage() {
+    favoritos = traerProductosLocalStorage("localFavoritos")
+    contadorFavoritos()
+    pintarFavoritos()
+
+    carrito = traerProductosLocalStorage("localCarrito")
+    contadorCarrito()
+    pintarCarrito()
+}
+
+
+
+//----------------------------- MAIN-Inicializar-------------------------------
+
+function main() {
+    inciarLocalStorage()
+    crearCardsMain(filtrados)
+}
+
+main()
