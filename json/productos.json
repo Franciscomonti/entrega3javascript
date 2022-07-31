@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "nombre": "Zapatilla Nike",
+        "codigo": "MD500",
+        "tipo": "calzado",
+        "precio": 25000.00,
+        "imagen": "nikeportada2.png" 
+    },
+
+    {
+        "id": 2,
+        "nombre": "Remera Manga Larga",
+        "codigo": "RM5400",
+        "tipo": "remera",
+        "precio": 3000.00,
+        "imagen": "remera-blanca-hombre-ml.jpg"
+    },
+    
+    {
+        "id": 3,
+        "nombre": "Buzo Negro Capucha",
+        "codigo": "BC300",
+        "tipo": "buzo",
+        "precio": 5000.00,
+        "imagen": "buzo-negro-capucha.webp"
+    }
+]

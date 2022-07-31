@@ -1,3 +1,18 @@
+
+obtenerJason()
+
+async function obtenerJason(){
+    const response = await fetch("../json/productos.json")
+    const data = await response.json()
+
+    data.forEach((prod) =>{
+        agregarProductos (prod.id, prod.nombre,prod.codigo,prod.tipo, prod.precio, prod.imagen)
+    })
+
+    main()
+    
+}
+
 //---------------------------------------------LISTA DE PRODUCTOS----------------------------------------------
 
 class Producto {
@@ -12,6 +27,13 @@ class Producto {
 }
 
 const listaProductos = [];
+
+let agregarProductos = (id, nombre, codigo, tipo, precio, imagen)=>{
+    let productosAgregados = new Producto (id, nombre, codigo, tipo, precio, imagen)
+    listaProductos.push(productosAgregados)
+}
+
+/*
 
 let prod1 = new Producto(1, "Zapatilla Nike", "MD500", "calzado", 25000.00, "nikeportada2.png")
 let prod2 = new Producto(2, "Remera Manga Larga", "RM5400", "remera", 3000.00, "remera-blanca-hombre-ml.jpg")
@@ -38,6 +60,9 @@ listaProductos.push(prod9);
 listaProductos.push(prod10);
 listaProductos.push(prod11);
 listaProductos.push(prod12);
+
+*/
+
 
 //---------------------------------- ALERTAS----------------------------------
 
@@ -118,6 +143,7 @@ function crearCard(producto) {
 //----------------------------------------------------CARRITO--------------------------------------------------
 
 let carrito = []
+
 
 function manejarCarrito(id) {
     estaEnCarrito(id) ? alertSeEncuentraCarrito(id) : agregarCarrito(id)
@@ -316,35 +342,39 @@ function filtrarProductos(event) {
             filtrados = listaProductos;
             colorBtnFiltro(this, "filtroTipo")
             crearCardsMain(listaProductos)
-            breack;
+            break;
+
         case "filtroRemera":
             filtrados = listaProductos.filter(
                 (producto) => producto.tipo == "remera"
             )
             colorBtnFiltro(this, "filtroTipo")
             crearCardsMain(filtrados)
-            breack;
+            break;
+
         case "filtroPantalon":
             filtrados = listaProductos.filter(
                 (producto) => producto.tipo == "pantalon"
             )
             colorBtnFiltro(this, "filtroTipo")
             crearCardsMain(filtrados)
-            breack;
+            break;
+
         case "filtroBuzo":
             filtrados = listaProductos.filter(
                 (producto) => producto.tipo == "buzo"
             )
             colorBtnFiltro(this, "filtroTipo")
             crearCardsMain(filtrados)
-            breack;
+            break;
+            
         case "filtroCalzado":
             filtrados = listaProductos.filter(
                 (producto) => producto.tipo == "calzado"
             )
             colorBtnFiltro(this, "filtroTipo")
             crearCardsMain(filtrados)
-            breack;
+            break;
     }
 }
 
@@ -435,4 +465,4 @@ function main() {
     crearCardsMain(filtrados)
 }
 
-main()
+
